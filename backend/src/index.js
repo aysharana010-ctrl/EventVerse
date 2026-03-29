@@ -1,22 +1,18 @@
-const express = require('express');
-const { connectDB, disconnectDB } = require('./db');
+require('dotenv').config();
+const app = require('./app');
+const pool = require('./db/pool');
 
-const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.get('/', (req, res) => {
-  res.json({ message: 'Eventverse backend application up and running!!!...' });
-});
-
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok', uptime: process.uptime() });
-});
-
 async function start() {
-  await connectDB();
+  // Verify DB connectivity before accepting traffic
+  await pool.query('SELECT 1');
+  console.log('PostgreSQL connected');
+
   const server = app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
   });
+
   return server;
 }
 
@@ -25,7 +21,7 @@ async function shutdown(server) {
   await new Promise((resolve, reject) => {
     server.close((err) => (err ? reject(err) : resolve()));
   });
-  await disconnectDB();
+  await pool.end();
   process.exit(0);
 }
 
