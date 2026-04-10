@@ -5,7 +5,7 @@ services:
     image: postgres:16
     container_name: event_verse_db
     env_file:
-      - .env
+      - ./frontend/.env
     ports:
       - "5432:5432"
     volumes:
@@ -22,7 +22,7 @@ services:
       context: ./backend
     container_name: event_verse_backend
     env_file:
-      - .env
+      - ./backend/.env
     ports:
       - "${PORT:-3000}:${PORT:-3000}"
     depends_on:
