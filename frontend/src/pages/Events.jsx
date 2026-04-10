@@ -1,89 +1,128 @@
+import React from "react";
+import { Link } from "react-router-dom";
+
 function Events() {
-    return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
+  const events = [
+    {
+      id: "1",
+      name: "Hackathon 2026",
+      description: "24-hour coding challenge to build innovative solutions.",
+      category: "Technology",
+      date: "April 20, 2026",
+      location: "Main Auditorium",
+      tags: ["Coding", "AI", "Competition"]
+    },
+    {
+      id: "2",
+      name: "Cultural Fest",
+      description: "A vibrant celebration of music, dance, and art.",
+      category: "Arts & Culture",
+      date: "May 5, 2026",
+      location: "Open Ground",
+      tags: ["Dance", "Music", "Fun"]
+    },
+    {
+      id: "3",
+      name: "Startup Pitch Day",
+      description: "Pitch your startup ideas to investors and mentors.",
+      category: "Business",
+      date: "June 10, 2026",
+      location: "Seminar Hall",
+      tags: ["Startup", "Pitching", "Business"]
+    },
+    {
+      id: "4",
+      name: "Sports Meet",
+      description: "Annual inter-college sports competition.",
+      category: "Sports",
+      date: "July 15, 2026",
+      location: "Sports Ground",
+      tags: ["Cricket", "Football", "Athletics"]
+    }
+  ];
 
-      {/* Hero */}
-      <section className="relative h-64 overflow-hidden md:h-80">
+  const categoryColors = {
+    Technology: "from-blue-500 to-orange-400",
+    "Arts & Culture": "from-pink-500 to-rose-400",
+    Business: "from-indigo-500 to-indigo-400",
+    Sports: "from-green-500 to-emerald-400"
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+
+      {/* ✅ Hero Section */}
+      <section className="relative h-64 md:h-80">
+
         <img
-          src={heroImg}
-          alt="Campus events"
-          className="h-full w-full object-cover"
+          src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8ZXZlbnR8ZW58MHx8MHx8fDA%3D"
+          alt="Events"
+          className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-foreground/70 to-foreground/20" />
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="text-center">
-            <h1 className="font-heading text-4xl font-bold text-primary-foreground md:text-5xl">
-              Campus Events
-            </h1>
-            <p className="mt-2 text-lg text-primary-foreground/80">
-              Discover what's happening on campus
-            </p>
-          </div>
+
+        <div className="absolute inset-0 bg-black/50"></div>
+
+        {/* 🔥 Lifted Text */}
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 text-center text-white">
+          <h1 className="text-4xl font-bold md:text-5xl">
+            Events
+          </h1>
+          <p className="mt-2 text-lg">
+            Discover what’s happening on campus
+          </p>
         </div>
+
       </section>
 
-      {/* Filters (static, no click functionality) */}
-      <div className="container py-6">
-        <div className="flex flex-wrap gap-2">
-          {eventCategories.map(function (cat) {
-            return (
-              <button key={cat} className="border px-3 py-1 rounded">
-                {cat}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Event Grid */}
-      <section className="container pb-16">
+      {/* ✅ Events Cards */}
+      <section className="px-6 md:px-20 py-16">
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {filtered.map(function (event, i) {
-            var percentage = event.spots
-              ? Math.round((event.registered / event.spots) * 100)
-              : 0;
 
-            return (
-              <div key={event.id} className="border rounded p-4 shadow">
-                <div className="flex justify-between text-sm">
-                  <span>{event.category}</span>
-                  <span>{event.club}</span>
+          {events.map((event) => (
+            <div
+              key={event.id}
+              className="rounded-lg bg-white shadow-sm overflow-hidden hover:shadow-lg transition"
+            >
+              {/* Top Gradient */}
+              <div className={`h-2 bg-gradient-to-r ${categoryColors[event.category]}`} />
+
+              <div className="p-6">
+                <h3 className="text-lg font-semibold">{event.name}</h3>
+                <p className="text-sm text-gray-500">{event.category}</p>
+
+                <p className="mt-2 text-sm text-gray-600">
+                  {event.description}
+                </p>
+
+                {/* Tags */}
+                <div className="mt-2 flex flex-wrap gap-1">
+                  {event.tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="text-xs bg-gray-100 px-2 py-1 rounded"
+                    >
+                      {tag}
+                    </span>
+                  ))}
                 </div>
 
-                <h2 className="mt-2 text-xl font-bold">{event.title}</h2>
-                <p className="text-sm">{event.description}</p>
-
-                <div className="mt-3 text-sm">
-                  <p>{new Date(event.date).toLocaleDateString()}</p>
-                  <p>{event.time}</p>
-                  <p>{event.location}</p>
+                {/* Info */}
+                <div className="mt-3 text-sm text-gray-600">
+                  <p>📅 {event.date}</p>
+                  <p>📍 {event.location}</p>
                 </div>
-
-                <div className="mt-3">
-                  <p className="text-xs">
-                    {event.registered}/{event.spots} registered ({percentage}%)
-                  </p>
-                  <div className="w-full bg-gray-200 h-2 rounded">
-                    <div
-                      className="bg-blue-500 h-2 rounded"
-                      style={{ width: percentage + "%" }}
-                    ></div>
-                  </div>
-                </div>
-
-                <button className="mt-4 w-full border py-2 rounded">
-                  {event.registered >= event.spots
-                    ? "Waitlist"
-                    : "Register Now"}
+                  <Link to="/EventRegistration">
+                <button className="px-6 py-2 rounded-full text-white font-semibold bg-gradient-to-r from-red-500 via-yellow-400 via-green-400 via-blue-500 via-indigo-500 via-purple-500 to-pink-500 hover:opacity-90 transition-opacity">
+                  Register
                 </button>
+                 </Link>
               </div>
-            );
-          })}
+            </div>
+          ))}
+
         </div>
       </section>
 
-      <Footer />
     </div>
   );
 }

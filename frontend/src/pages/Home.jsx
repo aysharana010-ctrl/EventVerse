@@ -1,56 +1,41 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 function Home() {
   return (
-    <div>
-      <h1>Home</h1>
     <div className="min-h-screen bg-gray-50">
       {/* Navbar */}
-      <header className="flex justify-between items-center p-6 bg-white shadow-md">
-        <div className="text-2xl font-bold text-blue-700">Event Verse</div>
-        <nav className="space-x-6 hidden md:flex">
-          <a href="#" className="text-gray-700 hover:text-blue-700">Home</a>
-          <a href="#" className="text-gray-700 hover:text-blue-700">Events</a>
-          <a href="#" className="text-gray-700 hover:text-blue-700">Clubs</a>
-          <a href="#" className="text-gray-700 hover:text-blue-700">Contact</a>
-        </nav>
-        <button className="bg-blue-700 text-white px-4 py-2 rounded hover:bg-blue-800">
-          Login
-        </button>
-      </header>
+     
 
       {/* Hero Section */}
-      <section className="flex flex-col md:flex-row items-center justify-between px-6 md:px-20 py-20">
-        {/* Left text */}
-        <div className="md:w-1/2 text-center md:text-left space-y-6">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900">
-            Welcome to Event Verse
-          </h1>
-          <p className="text-gray-600 text-lg md:text-xl">
+     <section className="flex flex-col items-center justify-center min-h-screen px-6 md:px-20 py-20 text-center space-y-8">
+        <div className="max-w-4xl space-y-6">
+         <h1 className="text-5xl md:text-7xl font-extrabold text-gray-900 leading-tight">
+            Discover Events. Join Clubs. Earn Certificates.
+         </h1>
+          <p className="text-2xl md:text-3xl text-gray-600">
             Discover, Join, & Manage College Events Easily
           </p>
+
           <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start mt-4">
-            <button className="bg-blue-700 text-white px-6 py-3 rounded-md hover:bg-blue-800">
+             <Link to="/Register">
+            <button className="px-6 py-2 rounded-full text-white font-semibold bg-gradient-to-r from-red-500 via-yellow-400 via-green-400 via-blue-500 via-indigo-500 via-purple-500 to-pink-500 hover:opacity-90 transition-opacity">
               Get Started
             </button>
-            <button className="border-2 border-blue-700 text-blue-700 px-6 py-3 rounded-md hover:bg-blue-50">
-              Explore Events
+              </Link>
+          </div>
+           <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start mt-4">
+             <Link to="/Login">
+            <button className="px-6 py-2 rounded-full text-white font-semibold bg-gradient-to-r from-red-500 via-yellow-400 via-green-400 via-blue-500 via-indigo-500 via-purple-500 to-pink-500 hover:opacity-90 transition-opacity">
+              Login
             </button>
+              </Link>
           </div>
         </div>
 
-        {/* Right illustration */}
-        <div className="md:w-1/2 mt-10 md:mt-0 flex justify-center">
-          <img
-            src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
-            alt="Event Illustration"
-            className="w-80 md:w-96"
-          />
-        </div>
       </section>
     </div>
-   </div>
-  )
+  );
 }
 
 export default Home;
