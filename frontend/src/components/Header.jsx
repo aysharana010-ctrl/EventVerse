@@ -1,10 +1,18 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 export const Header = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
 
-  // Hide these links only on the home page
+  // Hide nav links only on the home page
   const hideLinks = location.pathname === '/';
+
+  function handleLogout() {
+    logout();
+    navigate('/login');
+  }
 
   return (
     <nav className="bg-white text-black px-16 py-4 flex items-center justify-between">
@@ -34,31 +42,56 @@ export const Header = () => {
               📅 Events
             </Link>
           </li>
-          <li>
-            <Link to="/profile" className="flex items-center gap-1 text-black no-underline hover:opacity-75 transition-opacity">
-              � Profile
-            </Link>
-          </li>
-           <li>
-            <Link to="/notifications" className="flex items-center gap-1 text-black no-underline hover:opacity-75 transition-opacity">
-              Notifications
-            </Link>
-          </li>
-           <li>
-            <Link to="/Certificates" className="flex items-center gap-1 text-black no-underline hover:opacity-75 transition-opacity">
-              Certificates
-            </Link>
-          </li>
-          <li>
-            <Link to="/Admin" className="flex items-center gap-1 text-black no-underline hover:opacity-75 transition-opacity">
-              Admin
-            </Link>
-          </li>
+
+          {user ? (
+            <>
+              <li>
+                <Link to="/profile" className="flex items-center gap-1 text-black no-underline hover:opacity-75 transition-opacity">
+                  👤 Profile
+                </Link>
+              </li>
+              <li>
+                <Link to="/notifications" className="flex items-center gap-1 text-black no-underline hover:opacity-75 transition-opacity">
+                  Notifications
+                </Link>
+              </li>
+              <li>
+                <Link to="/Certificates" className="flex items-center gap-1 text-black no-underline hover:opacity-75 transition-opacity">
+                  Certificates
+                </Link>
+              </li>
+              {user.role === 'club_head' && (
+                <li>
+                  <Link to="/Admin" className="flex items-center gap-1 text-black no-underline hover:opacity-75 transition-opacity">
+                    Admin
+                  </Link>
+                </li>
+              )}
+              <li>
+                <button
+                  onClick={handleLogout}
+                  className="text-sm text-red-600 hover:underline"
+                >
+                  Logout
+                </button>
+              </li>
+            </>
+          ) : (
+            <>
+              <li>
+                <Link to="/login" className="flex items-center gap-1 text-black no-underline hover:opacity-75 transition-opacity">
+                  Login
+                </Link>
+              </li>
+              <li>
+                <Link to="/register" className="flex items-center gap-1 text-black no-underline hover:opacity-75 transition-opacity">
+                  Register
+                </Link>
+              </li>
+            </>
+          )}
         </ul>
       )}
-
-      {/* Login/Register Buttons */}
-     
     </nav>
   );
 };

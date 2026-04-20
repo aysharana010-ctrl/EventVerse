@@ -1,20 +1,25 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import * as api from "../services/api";
+import { useAuth } from "../context/AuthContext";
+
 function AdminDashboard() {
+  const { user } = useAuth();
 
-  const stats = [
-    { label: "Total Students", value: "1,245", icon: "👥", change: "+12%" },
-    { label: "Active Events", value: "24", icon: "📅", change: "+3" },
-    { label: "Certificates Issued", value: "856", icon: "🏅", change: "+45" },
-    { label: "Clubs", value: "18", icon: "📈", change: "+2" },
-  ];
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const registrations = [
-    "Alice Johnson - Tech Fest",
-    "Bob Smith - Hackathon 3.0",
-    "Carol Williams - AI Workshop",
-    "David Brown - Cultural Night",
-  ];
+  useEffect(() => {
+    if (!user?.clubId) {
+      setLoading(false);
+      return;
+    }
+    api.getClubEvents(user.clubId)
+      .then(setEvents)
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  }, [user]);
 
   return (
     <div className="min-h-screen bg-gray-100 px-4 py-10 flex justify-center">
@@ -32,62 +37,83 @@ function AdminDashboard() {
           </div>
 
           <div className="flex gap-2 flex-wrap">
-            <a href="/admin/events">
+            <Link to="/admin/events">
               <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
                 ⚙️ Manage Events
               </button>
-            </a>
+            </Link>
 
-            <a href="/admin/certificates">
+            <Link to="/admin/certificates">
               <button className="border px-4 py-2 rounded-lg hover:bg-gray-100">
                 📤 Upload Certs
               </button>
-            </a>
+            </Link>
           </div>
 
         </div>
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-
-          {stats.map((s) => (
-            <div
-              key={s.label}
-              className="bg-white p-6 rounded-2xl shadow-sm"
-            >
-
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-xl">{s.icon}</span>
-                <span className="text-xs text-gray-500">
-                  {s.change}
-                </span>
-              </div>
-
-              <p className="text-2xl font-bold">{s.value}</p>
-              <p className="text-sm text-gray-500">{s.label}</p>
-
+          <div className="bg-white p-6 rounded-2xl shadow-sm">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xl">📅</span>
             </div>
-          ))}
+            <p className="text-2xl font-bold">{events.length}</p>
+            <p className="text-sm text-gray-500">Your Events</p>
+          </div>
 
+          {/* TODO: stats for students, certificates, clubs require additional API endpoints */}
+          <div className="bg-white p-6 rounded-2xl shadow-sm">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xl">👥</span>
+            </div>
+            <p className="text-2xl font-bold">—</p>
+            <p className="text-sm text-gray-500">Total Students</p>
+          </div>
+
+          <div className="bg-white p-6 rounded-2xl shadow-sm">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xl">🏅</span>
+            </div>
+            <p className="text-2xl font-bold">—</p>
+            <p className="text-sm text-gray-500">Certificates Issued</p>
+          </div>
+
+          <div className="bg-white p-6 rounded-2xl shadow-sm">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xl">📈</span>
+            </div>
+            <p className="text-2xl font-bold">—</p>
+            <p className="text-sm text-gray-500">Clubs</p>
+          </div>
         </div>
 
         {/* Bottom Sections */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-          {/* Recent Registrations */}
+          {/* Club Events */}
           <div className="bg-white p-6 rounded-2xl shadow-sm space-y-3">
 
-            <h2 className="text-xl font-semibold">
-              Recent Registrations
-            </h2>
+            <h2 className="text-xl font-semibold">Your Events</h2>
 
-            {registrations.map((r) => (
+            {loading && <p className="text-gray-500 text-sm">Loading events...</p>}
+            {error && <p className="text-red-600 text-sm">{error}</p>}
+            {!user?.clubId && !loading && (
+              <p className="text-gray-500 text-sm">No club associated with your account.</p>
+            )}
+            {!loading && !error && events.length === 0 && user?.clubId && (
+              <p className="text-gray-500 text-sm">No events yet.</p>
+            )}
+
+            {events.map((ev) => (
               <div
-                key={r}
+                key={ev.id}
                 className="flex justify-between border-b py-2 last:border-0"
               >
-                <span className="text-sm">{r}</span>
-                <span className="text-xs text-gray-500">Today</span>
+                <span className="text-sm">{ev.name}</span>
+                <span className="text-xs text-gray-500">
+                  {ev.starts_at ? new Date(ev.starts_at).toLocaleDateString() : "TBD"}
+                </span>
               </div>
             ))}
 
@@ -96,23 +122,22 @@ function AdminDashboard() {
           {/* Quick Actions */}
           <div className="bg-white p-6 rounded-2xl shadow-sm space-y-3">
 
-            <h2 className="text-xl font-semibold">
-              Quick Actions
-            </h2>
+            <h2 className="text-xl font-semibold">Quick Actions</h2>
 
-            <a href="/admin/events">
+            <Link to="/admin/events">
               <button className="w-full border px-4 py-2 rounded-lg text-left hover:bg-gray-100">
                 📅 Create New Event
               </button>
-            </a>
+            </Link>
 
-            <a href="/admin/certificates">
+            <Link to="/admin/certificates">
               <button className="w-full border px-4 py-2 rounded-lg text-left hover:bg-gray-100">
                 📤 Upload Certificates
               </button>
-            </a>
+            </Link>
 
-            <button className="w-full border px-4 py-2 rounded-lg text-left hover:bg-gray-100">
+            {/* TODO: View All Students requires a dedicated admin endpoint */}
+            <button className="w-full border px-4 py-2 rounded-lg text-left hover:bg-gray-100 opacity-50 cursor-not-allowed">
               👥 View All Students
             </button>
 

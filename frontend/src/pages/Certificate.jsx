@@ -1,41 +1,21 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import * as api from "../services/api";
+import { useAuth } from "../context/AuthContext";
+
 function Certificates() {
+  const { user } = useAuth();
 
-  const certificates = [
-    {
-      id: 1,
-      title: "Hackathon 2.0 - Participation",
-      event: "Hackathon 2.0",
-      date: "Mar 2026",
-      type: "Participation",
-    },
-    {
-      id: 2,
-      title: "Tech Fest - 1st Place",
-      event: "Tech Fest 2025",
-      date: "Nov 2025",
-      type: "Winner",
-    },
-    {
-      id: 3,
-      title: "AI Workshop - Completion",
-      event: "AI/ML Workshop",
-      date: "Sep 2025",
-      type: "Completion",
-    },
-    {
-      id: 4,
-      title: "Coding Club - Active Member",
-      event: "Coding Club",
-      date: "2025",
-      type: "Membership",
-    },
-  ];
+  const [certificates, setCertificates] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  function handleDownload() {
-    alert("Download started");
-  }
+  useEffect(() => {
+    if (!user) return;
+    api.getStudentCertificates(user.id)
+      .then(setCertificates)
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  }, [user]);
 
   return (
     <div className="min-h-screen bg-gray-100 flex justify-center px-4 py-10">
@@ -44,13 +24,15 @@ function Certificates() {
 
         {/* Header */}
         <div>
-          <h1 className="text-3xl font-bold">
-            My Certificates
-          </h1>
-          <p className="text-gray-500">
-            Download and share your achievements
-          </p>
+          <h1 className="text-3xl font-bold">My Certificates</h1>
+          <p className="text-gray-500">Download and share your achievements</p>
         </div>
+
+        {loading && <p className="text-gray-500">Loading certificates...</p>}
+        {error && <p className="text-red-600">{error}</p>}
+        {!loading && !error && certificates.length === 0 && (
+          <p className="text-gray-500">No certificates yet.</p>
+        )}
 
         {/* Certificates List */}
         <div className="space-y-4">
@@ -68,26 +50,27 @@ function Certificates() {
 
               {/* Info */}
               <div className="flex-1">
-                <p className="font-semibold">
-                  {cert.title}
-                </p>
+                <p className="font-semibold">{cert.title}</p>
                 <p className="text-sm text-gray-500">
-                  {cert.event} · {cert.date}
+                  {cert.event_name}
+                  {cert.club_name ? ` · ${cert.club_name}` : ""}
+                  {cert.issue_date ? ` · ${new Date(cert.issue_date).toLocaleDateString()}` : ""}
                 </p>
               </div>
 
-              {/* Type */}
-              <span className="border px-3 py-1 rounded text-sm">
-                {cert.type}
-              </span>
-
               {/* Button */}
-              <button
-                onClick={handleDownload}
-                className="text-sm bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition"
-              >
-                Download
-              </button>
+              {cert.file_url ? (
+                <a
+                  href={cert.file_url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-sm bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition"
+                >
+                  Download
+                </a>
+              ) : (
+                <span className="text-sm text-gray-400">Unavailable</span>
+              )}
 
             </div>
           ))}
