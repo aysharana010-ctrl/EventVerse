@@ -85,7 +85,7 @@ eventVerse/
 
 ## Environment Variables
 
-Create a `.env` file in the project root before running anything:
+Create a `.env` file in the backend root before running anything:
 
 ```env
 # Database
@@ -97,6 +97,12 @@ DB_PORT=5432
 
 # Backend
 PORT=3000
+```
+
+Create a `.env` file in the frontend root:
+
+```env
+VITE_API_URL=http://localhost:3000
 ```
 
 > When using Docker, `DB_HOST` should be set to `postgres` (the Docker service name) instead of `localhost`.
